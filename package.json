@@ -1,0 +1,17 @@
+{
+  "name": "projeto1",
+  "version": "1.0.0",
+  "description": "Mapa interativo dos bairros com API Supabase",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vercel dev",
+    "start": "vercel dev",
+    "build": "echo 'Projeto estático, sem build'"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.7"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
