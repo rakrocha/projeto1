@@ -2,6 +2,7 @@
   "name": "projeto1",
   "version": "1.0.0",
   "description": "Mapa interativo dos bairros com API Supabase",
+  "type": "module",
   "main": "index.js",
   "scripts": {
     "dev": "vercel dev",
