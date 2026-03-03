@@ -32,10 +32,10 @@
       position: relative;
       display: block;
       margin: 20px auto;
-      width: 70%; /* agora sempre ocupa 70% da largura da página */
+      width: 70%;
     }
     .image-container img {
-      width: 100%; /* imagem se ajusta ao container */
+      width: 100%;
       border: 2px solid #ccc;
       display: block;
     }
@@ -51,7 +51,7 @@
       text-align: center;
     }
     .share-btn { top: 10px; }
-    .download-btn { top: 45px; } /* aparece logo abaixo do botão de compartilhar */
+    .download-btn { top: 45px; }
     form { margin: 20px; }
     input { margin: 5px; padding: 5px; }
     button { margin: 5px; padding: 5px 10px; }
@@ -105,10 +105,16 @@
 
     // Carregar registros do backend
     async function loadRegistros() {
-      const res = await fetch('/api/pessoas');
-      const data = await res.json();
-      registros = data.filter(r => r.bairro === bairro);
-      renderTable();
+      try {
+        const res = await fetch('/api/pessoas');
+        if (!res.ok) throw new Error("Erro ao carregar registros");
+        const data = await res.json();
+        registros = data.filter(r => r.bairro === bairro);
+        renderTable();
+      } catch (err) {
+        console.error(err);
+        alert("Não foi possível carregar os registros.");
+      }
     }
 
     // Renderizar tabela
@@ -176,13 +182,28 @@
       }
     }
 
-    // Baixar imagem para compartilhar manualmente
-    function downloadImage() {
+    // Baixar imagem para dispositivos móveis (usando Blob)
+    async function downloadImage() {
       const imgUrl = document.getElementById('mapaBairro').src;
-      const a = document.createElement('a');
-      a.href = imgUrl;
-      a.download = "mapa-bairro.png";
-      a.click();
+      try {
+        const response = await fetch(imgUrl);
+        if (!response.ok) throw new Error("Erro ao buscar imagem");
+        
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "mapa-bairro.png";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error("Erro ao baixar imagem:", err);
+        alert("Não foi possível baixar a imagem neste dispositivo.");
+      }
     }
 
     // Inicializar
