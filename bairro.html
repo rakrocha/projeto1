@@ -77,11 +77,19 @@
     document.getElementById('tituloBairro').textContent = bairro;
     document.getElementById('mapaBairro').src = img;
 
-    const STORAGE_KEY = 'registros_' + bairro;
     const form = document.getElementById('personForm');
     const tableBody = document.querySelector('#personTable tbody');
-    let registros = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    let registros = [];
 
+    // Carregar registros do backend
+    async function loadRegistros() {
+      const res = await fetch('/api/pessoas');
+      const data = await res.json();
+      registros = data.filter(r => r.bairro === bairro);
+      renderTable();
+    }
+
+    // Renderizar tabela
     function renderTable() {
       tableBody.innerHTML = '';
       registros.forEach((item, index) => {
@@ -91,37 +99,45 @@
           <td>${item.saida}</td>
           <td>
             <button onclick="editRegistro(${index})">Editar</button>
-            <button onclick="deleteRegistro(${index})">Remover</button>
+            <button onclick="deleteRegistro(${item.id})">Remover</button>
           </td>
         `;
         tableBody.appendChild(row);
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(registros));
     }
 
-    form.addEventListener('submit', (e) => {
+    // Adicionar registro
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const dirigente = document.getElementById('dirigente').value;
       const saida = document.getElementById('saida').value;
-      registros.push({ dirigente, saida });
-      renderTable();
+
+      await fetch('/api/pessoas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bairro, dirigente, saida })
+      });
+
       form.reset();
+      loadRegistros();
     });
 
-    function deleteRegistro(index) {
-      registros.splice(index, 1);
-      renderTable();
-    }
-
-    function editRegistro(index) {
+    // Editar registro (remove e re-adiciona)
+    async function editRegistro(index) {
       const registro = registros[index];
       document.getElementById('dirigente').value = registro.dirigente;
       document.getElementById('saida').value = registro.saida;
-      registros.splice(index, 1);
-      renderTable();
+      await deleteRegistro(registro.id);
     }
 
-    renderTable();
+    // Remover registro
+    async function deleteRegistro(id) {
+      await fetch(`/api/pessoas?id=${id}`, { method: 'DELETE' });
+      loadRegistros();
+    }
+
+    // Inicializar
+    loadRegistros();
   </script>
 </body>
 </html>
