@@ -61,43 +61,42 @@
   <script>
     // Estrutura de dados com os bairros
     const bairros = [
-      {nome: "Jardim Morro Azul", label: "01 Jd Morro Azul", x: 106, y: 250, w: 128, h: 50},
-{nome: "Jardim Morro Azul", label: "02 Jd Morro Azul", x: 260, y: 343, w: 128, h: 50},
-{nome: "Jardim São Paulo", label: "03 Jd São Paulo", x: 110, y: 374, w: 120, h: 50},
-{nome: "Jardim São Paulo", label: "04 Jd São Paulo", x: 153, y: 523, w: 120, h: 50},
-{nome: "Jardim São Paulo", label: "05 Jd São Paulo", x: 410, y: 465, w: 120, h: 50},
-{nome: "Jardim Paulista", label: "06 Jd Paulista", x: 410, y: 281, w: 112, h: 50},
-{nome: "Jardim Nova Italia", label: "07 Jd Nova Italia", x: 569, y: 252, w: 136, h: 50},
-{nome: "Jardim Santa Luiza", label: "08 Jd Santa Luiza", x: 733, y: 226, w: 136, h: 50},
-{nome: "Jardim Aquarius", label: "09 Jardim Aquarius", x: 963, y: 121, w: 144, h: 50},
-{nome: "Jardim Piratininga", label: "10 Jd Piratininga", x: 846, y: 274, w: 136, h: 50},
-{nome: "Jardim Piratininga", label: "11 Jd Piratininga", x: 931, y: 328, w: 136, h: 50},
-{nome: "Jardim Piratininga", label: "12 Jd Piratininga", x: 1077, y: 211, w: 136, h: 50},
-{nome: "Vila Mathias", label: "13 Vila Mathias", x: 1070, y: 361, w: 120, h: 50},
-{nome: "Jardim Piratininga", label: "14 Jd Piratininga", x: 623, y: 385, w: 136, h: 50},
-{nome: "Jardim Nova Italia", label: "15 Jd Nova Italia", x: 779, y: 395, w: 136, h: 50},
-{nome: "Limeiranea", label: "16 Limeiranea", x: 152, y: 739, w: 104, h: 50},
-{nome: "Senador Vergueiro", label: "17 Senador Vergueiro", x: 329, y: 680, w: 160, h: 50},
-{nome: "Salão do Reino I", label: "18 Salão do Reino I", x: 519, y: 632, w: 152, h: 50},
-{nome: "Amparo I", label: "19 Amparo I", x: 757, y: 647, w: 88, h: 50},
-{nome: "Santa Josefa II", label: "20 Santa Josefa II", x: 904, y: 598, w: 144, h: 50},
-{nome: "São João III", label: "21 São João III", x: 1013, y: 545, w: 120, h: 50},
-{nome: "São João II", label: "22 São João II", x: 1115, y: 517, w: 112, h: 50},
-{nome: "São João I", label: "23 São João I", x: 1233, y: 495, w: 104, h: 50},
-{nome: "Centro", label: "24 Centro", x: 1314, y: 593, w: 72, h: 50},
-{nome: "Maria Helena II", label: "25 Maria Helena II", x: 1191, y: 716, w: 144, h: 50},
-{nome: "Maria Helena I", label: "26 Maria Helena I", x: 1110, y: 775, w: 136, h: 50},
-{nome: "Santa Josefa I", label: "27 Santa Josefa I", x: 964, y: 786, w: 136, h: 50},
-{nome: "Santa Cecilia", label: "28 Santa Cecilia", x: 1008, y: 960, w: 128, h: 50},
-{nome: "Amparo II", label: "29 Amparo II", x: 793, y: 984, w: 96, h: 50},
-{nome: "Vila Di Fior", label: "30 Vila Di Fior", x: 765, y: 881, w: 120, h: 50},
-{nome: "Modeneis", label: "31 Modeneis", x: 772, y: 1094, w: 88, h: 50},
-{nome: "Salão do Reino II", label: "32 Salão do Reino II", x: 558, y: 779, w: 160, h: 50},
-{nome: "Vila Agostinho", label: "33 Vila Agostinho", x: 357, y: 912, w: 136, h: 50},
-{nome: "Limeiranea II", label: "34 Limeiranea II", x: 216, y: 1013, w: 128, h: 50},
-{nome: "Sthalberg I", label: "35 Sthalberg I", x: 574, y: 911, w: 112, h: 50},
-{nome: "Sthalberg II", label: "36 Sthalberg II", x: 502, y: 1052, w: 120, h: 50},
-
+      {nome: "Jardim São Paulo", label: "01 Jd São Paulo", imageid: "01", x: 153, y: 523, w: 120, h: 50},
+{nome: "Jardim São Paulo", label: "02 Jd São Paulo", imageid: "02", x: 410, y: 465, w: 120, h: 50},
+{nome: "Jardim São Paulo (Caixa D'Água)", label: "03 Jd São Paulo", imageid: "03", x: 110, y: 374, w: 120, h: 50},
+{nome: "Jardim Morro Azul (Baixo)", label: "04 Jd Morro Azul", imageid: "04", x: 106, y: 250, w: 128, h: 50},
+{nome: "Jardim Morro Azul (Cima)", label: "05 Jd Morro Azul", imageid: "05", x: 260, y: 343, w: 128, h: 50},
+{nome: "Jardim Paulista", label: "06 Jd Paulista", imageid: "06", x: 410, y: 281, w: 112, h: 50},
+{nome: "Jardim Piratininga", label: "07 Jd Piratininga", imageid: "07", x: 623, y: 385, w: 136, h: 50},
+{nome: "Jardim Nova Italia", label: "08 Jd Nova Italia", imageid: "08", x: 569, y: 252, w: 136, h: 50},
+{nome: "Jardim Nova Italia", label: "09 Jd Nova Italia", imageid: "09", x: 779, y: 395, w: 136, h: 50},
+{nome: "Jardim Santa Luiza", label: "10 Jd Santa Luiza", imageid: "10", x: 733, y: 226, w: 136, h: 50},
+{nome: "Jardim Piratininga", label: "11 Jd Piratininga", imageid: "11", x: 846, y: 274, w: 136, h: 50},
+{nome: "Jardim Piratininga", label: "12 Jd Piratininga", imageid: "12", x: 931, y: 328, w: 136, h: 50},
+{nome: "Jardim Aquarius", label: "13 Jardim Aquarius", imageid: "13", x: 963, y: 121, w: 144, h: 50},
+{nome: "Jardim Piratininga (Praça da Bíblia)", label: "14 Jd Piratininga", imageid: "14", x: 1077, y: 211, w: 136, h: 50},
+{nome: "Vila Mathias", label: "15 Vila Mathias", imageid: "15", x: 1070, y: 361, w: 120, h: 50},
+{nome: "Limeiranea I", label: "16 Limeiranea I", imageid: "16", x: 144, y: 739, w: 120, h: 50},
+{nome: "Limeiranea II", label: "17 Limeiranea II", imageid: "17", x: 216, y: 1013, w: 128, h: 50},
+{nome: "Vila Agostinho", label: "18 Vila Agostinho", imageid: "18", x: 357, y: 912, w: 136, h: 50},
+{nome: "Senador Vergueiro", label: "19 Senador Vergueiro", imageid: "19", x: 329, y: 680, w: 160, h: 50},
+{nome: "Salão do Reino I", label: "20 Salão do Reino I", imageid: "20", x: 519, y: 632, w: 152, h: 50},
+{nome: "Salão do Reino II", label: "21 Salão do Reino II", imageid: "21", x: 558, y: 779, w: 160, h: 50},
+{nome: "Sthalberg I", label: "22 Sthalberg I", imageid: "22", x: 574, y: 911, w: 112, h: 50},
+{nome: "Sthalberg II", label: "23 Sthalberg II", imageid: "23", x: 502, y: 1052, w: 120, h: 50},
+{nome: "Amparo I", label: "24 Amparo I", imageid: "24", x: 757, y: 647, w: 88, h: 50},
+{nome: "Amparo II", label: "25 Vila Di Fior", imageid: "25", x: 781, y: 984, w: 120, h: 50},
+{nome: "Vila Di Fior", label: "26 Amparo II", imageid: "26", x: 777, y: 881, w: 96, h: 50},
+{nome: "Modeneis", label: "27 Modeneis", imageid: "27", x: 772, y: 1094, w: 88, h: 50},
+{nome: "Santa Josefa I", label: "28 Santa Josefa I", imageid: "28", x: 964, y: 786, w: 136, h: 50},
+{nome: "Santa Josefa II", label: "29 Santa Josefa II", imageid: "29", x: 904, y: 598, w: 144, h: 50},
+{nome: "Maria Helena II", label: "30 Maria Helena II", imageid: "30", x: 1191, y: 716, w: 144, h: 50},
+{nome: "Maria Helena I", label: "31 Maria Helena I", imageid: "31", x: 1110, y: 775, w: 136, h: 50},
+{nome: "São João I", label: "32 São João I", imageid: "32", x: 1233, y: 495, w: 104, h: 50},
+{nome: "São João II", label: "33 São João II", imageid: "33", x: 1115, y: 517, w: 112, h: 50},
+{nome: "São João III", label: "34 São João III", imageid: "34", x: 1013, y: 545, w: 120, h: 50},
+{nome: "Santa Cecilia", label: "35 Santa Cecilia", imageid: "35", x: 1008, y: 960, w: 128, h: 50},
+{nome: "Centro", label: "36 Centro", imageid: "36", x: 1314, y: 593, w: 72, h: 50},
       // basta adicionar novos bairros aqui
     ];
 
@@ -106,7 +105,7 @@
 bairros.forEach(b => {
   // Cria o link que envolve a caixa e o texto
   const a = document.createElementNS("http://www.w3.org/2000/svg", "a");
-  a.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `bairro.html?nome=${b.nome}&img=${b.nome}.png`);
+  a.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `bairro.html?nome=${b.nome}&img=${b.imageid}.png`);
 
   // Caixa de fundo
   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
