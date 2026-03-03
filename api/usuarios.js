@@ -1,33 +1,20 @@
 // usuarios.js
-import { createClient } from '@supabase/supabase-js';
-import bcrypt from 'bcryptjs';
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-
 export async function validarLogin(usuario, senha) {
   try {
-    const { data, error } = await supabase
-      .from('usuarios')
-      .select('id, username, password_hash')
-      .eq('username', usuario)
-      .single();
+    const resposta = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ usuario, senha })
+    });
 
-    if (error || !data) {
-      return { sucesso: false, mensagem: 'Usuário não encontrado' };
+    if (!resposta.ok) {
+      return { sucesso: false, mensagem: 'Erro na requisição' };
     }
 
-    const valido = await bcrypt.compare(senha, data.password_hash);
-
-    if (!valido) {
-      return { sucesso: false, mensagem: 'Senha inválida' };
-    }
-
-    return { sucesso: true, usuarioId: data.id };
+    const resultado = await resposta.json();
+    return resultado; // { sucesso: true, usuarioId: ... } ou { sucesso: false }
   } catch (err) {
-    console.error('Erro Supabase:', err.message);
+    console.error('Erro ao validar login:', err);
     return { sucesso: false, mensagem: 'Erro interno' };
   }
 }
