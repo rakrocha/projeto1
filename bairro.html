@@ -83,7 +83,7 @@
 
     // Carregar registros do backend
     async function loadRegistros() {
-      const res = await fetch('/api/pessoas');
+      const res = await fetch('/pessoas');
       const data = await res.json();
       registros = data.filter(r => r.bairro === bairro);
       renderTable();
@@ -112,7 +112,7 @@
       const dirigente = document.getElementById('dirigente').value;
       const saida = document.getElementById('saida').value;
 
-      await fetch('/api/pessoas', {
+      await fetch('/pessoas', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ bairro, dirigente, saida })
@@ -132,7 +132,7 @@
 
     // Remover registro
     async function deleteRegistro(id) {
-      await fetch(`/api/pessoas?id=${id}`, { method: 'DELETE' });
+      await fetch(`/pessoas?id=${id}`, { method: 'DELETE' });
       loadRegistros();
     }
 
