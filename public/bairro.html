@@ -39,16 +39,17 @@
       border: 2px solid #ccc;
       display: block;
     }
-    .share-btn {
+    .share-btn, .download-btn {
       position: absolute;
       top: 10px;
-      right: 10px;
       background-color: white;
       border: 1px solid #ccc;
       padding: 5px;
       cursor: pointer;
       font-size: 14px;
     }
+    .share-btn { right: 50px; }
+    .download-btn { right: 10px; }
     form { margin: 20px; }
     input { margin: 5px; padding: 5px; }
     button { margin: 5px; padding: 5px 10px; }
@@ -66,7 +67,8 @@
 
   <div class="image-container">
     <img id="mapaBairro" src="" alt="Mapa do bairro">
-    <button class="share-btn" onclick="shareImage()">📤</button>
+    <button class="share-btn" onclick="shareLink()">🔗 Link</button>
+    <button class="download-btn" onclick="downloadImage()">⬇️ Baixar</button>
   </div>
 
   <form id="personForm">
@@ -154,28 +156,31 @@
       loadRegistros();
     }
 
-    // Compartilhar imagem como arquivo
-    async function shareImage() {
-      const imgElement = document.getElementById('mapaBairro');
-      const imgUrl = imgElement.src;
-
-      try {
-        const response = await fetch(imgUrl);
-        const blob = await response.blob();
-        const file = new File([blob], "mapa-bairro.png", { type: blob.type });
-
-        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    // Compartilhar link da imagem
+    async function shareLink() {
+      const imgUrl = document.getElementById('mapaBairro').src;
+      if (navigator.share) {
+        try {
           await navigator.share({
             title: "Mapa do bairro",
             text: "Confira este mapa!",
-            files: [file]
+            url: imgUrl
           });
-        } else {
-          alert("Compartilhamento de arquivos não suportado neste navegador.");
+        } catch (err) {
+          console.error("Erro ao compartilhar link:", err);
         }
-      } catch (err) {
-        console.error("Erro ao compartilhar imagem:", err);
+      } else {
+        alert("Compartilhamento de link não suportado neste navegador.");
       }
+    }
+
+    // Baixar imagem para compartilhar manualmente
+    function downloadImage() {
+      const imgUrl = document.getElementById('mapaBairro').src;
+      const a = document.createElement('a');
+      a.href = imgUrl;
+      a.download = "mapa-bairro.png";
+      a.click();
     }
 
     // Inicializar
