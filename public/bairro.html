@@ -131,10 +131,23 @@
       alert("Usuário ou senha inválidos!");
       window.location.href = "index.html";
     } else {
+      // Mostra mensagem e só depois libera o conteúdo
+      alert("Usuário encontrado");
       document.getElementById("loginBox").style.display = "none";
       document.getElementById("conteudo").style.display = "block";
       inicializarConteudo();
     }
+  }
+
+  function inicializarConteudo() {
+    const params = new URLSearchParams(window.location.search);
+    const bairro = params.get('nome') || "Bairro";
+    const img = params.get('img') || "mapa.png";
+
+    document.getElementById('tituloBairro').textContent = bairro;
+    document.getElementById('mapaBairro').src = img;
+
+    loadRegistros();
   }
 
  // Captura parâmetros da URL
