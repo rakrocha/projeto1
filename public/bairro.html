@@ -28,11 +28,26 @@
       cursor: pointer;
       font-weight: bold;
     }
-    img {
+    .image-container {
+      position: relative;
       display: block;
       margin: 20px auto;
-      width: 50%;
+      width: 25%; /* reduzido para metade do tamanho anterior */
+    }
+    .image-container img {
+      width: 100%;
       border: 2px solid #ccc;
+      display: block;
+    }
+    .share-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 14px;
     }
     form { margin: 20px; }
     input { margin: 5px; padding: 5px; }
@@ -49,7 +64,10 @@
     <div style="width:60px;"></div>
   </header>
 
-  <img id="mapaBairro" src="" alt="Mapa do bairro">
+  <div class="image-container">
+    <img id="mapaBairro" src="" alt="Mapa do bairro">
+    <button class="share-btn" onclick="shareImage()">🔗</button>
+  </div>
 
   <form id="personForm">
     <input type="text" id="dirigente" placeholder="Nome do dirigente" required>
@@ -134,6 +152,24 @@
     async function deleteRegistro(id) {
       await fetch(`/api/pessoas?id=${id}`, { method: 'DELETE' });
       loadRegistros();
+    }
+
+    // Compartilhar imagem
+    async function shareImage() {
+      const imgUrl = document.getElementById('mapaBairro').src;
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: 'Mapa do bairro',
+            text: 'Confira este mapa!',
+            url: imgUrl
+          });
+        } catch (err) {
+          console.error('Erro ao compartilhar:', err);
+        }
+      } else {
+        alert("Compartilhamento não suportado neste navegador.");
+      }
     }
 
     // Inicializar
