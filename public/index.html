@@ -2,142 +2,154 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Bairro</title>
+  <title>Mapa Interativo dos Bairros</title>
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; }
-    header {
-      background-color: blue;
-      color: white;
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    header h1 {
+    /* Layout geral */
+    body {
+      font-family: Arial, sans-serif;
       margin: 0;
-      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;             /* ocupa toda a altura da tela */
+    }
+
+    /* Título fixo no topo */
+    header {
+      flex: 0 0 auto;            /* não cresce, fica fixo */
       text-align: center;
-      font-size: 24px;
-      font-weight: bold;
+      padding: 15px;
+      background: #f0f0f0;
+      border-bottom: 2px solid #ccc;
     }
-    header button {
-      background-color: white;
+
+    h1 {
       color: blue;
-      border: none;
-      padding: 8px 12px;
-      cursor: pointer;
-      font-weight: bold;
+      margin-bottom: 20px;
     }
-    img {
-      display: block;
-      margin: 20px auto;
-      width: 50%;
+
+
+    /* Container do mapa */
+    main {
+      flex: 1 1 auto;            /* ocupa o restante da tela */
+      display: flex;
+      justify-content: center;   /* centraliza horizontalmente */
+      align-items: center;       /* centraliza verticalmente */
+    }
+
+    svg {
+      height: 100vh;             /* ocupa toda a altura da tela */
+      width: auto;               /* largura proporcional */
       border: 2px solid #ccc;
+      display: block;
     }
-    form { margin: 20px; }
-    input { margin: 5px; padding: 5px; }
-    button { margin: 5px; padding: 5px 10px; }
-    table { border-collapse: collapse; width: 90%; margin: 20px auto; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-    th { background-color: #f2f2f2; }
+
+    text { cursor: pointer; }
   </style>
 </head>
 <body>
   <header>
-    <button onclick="location.href='index.html'">Voltar</button>
-    <h1 id="tituloBairro">Bairro</h1>
-    <div style="width:60px;"></div>
+    <h1>Mapa Interativo dos Bairros</h1>
   </header>
 
-  <img id="mapaBairro" src="" alt="Mapa do bairro">
-
-  <form id="personForm">
-    <input type="text" id="dirigente" placeholder="Nome do dirigente" required>
-    <input type="date" id="saida" required>
-    <button type="submit">Adicionar</button>
-  </form>
-
-  <table id="personTable">
-    <thead>
-      <tr>
-        <th>Nome do dirigente</th>
-        <th>Data da saída de Campo</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <main>
+    <svg id="mapa" viewBox="0 0 1500 1450" preserveAspectRatio="xMidYMid meet" xmlns="http://www.w3.org/2000/svg">
+      <!-- Imagem de fundo -->
+      <image href="mapacompleto.png" x="0" y="0" width="1500" height="1450"/>
+    </svg>
+  </main>
 
   <script>
-    // Captura parâmetros da URL
-    const params = new URLSearchParams(window.location.search);
-    const bairro = params.get('nome') || "Bairro";
-    const img = params.get('img') || "mapa.png";
+    // Estrutura de dados com os bairros
+    const bairros = [
+      {nome: "Jardim Morro Azul", label: "01 Jd Morro Azul", x: 106, y: 250, w: 128, h: 50},
+{nome: "Jardim Morro Azul", label: "02 Jd Morro Azul", x: 260, y: 343, w: 128, h: 50},
+{nome: "Jardim São Paulo", label: "03 Jd São Paulo", x: 110, y: 374, w: 120, h: 50},
+{nome: "Jardim São Paulo", label: "04 Jd São Paulo", x: 153, y: 523, w: 120, h: 50},
+{nome: "Jardim São Paulo", label: "05 Jd São Paulo", x: 410, y: 465, w: 120, h: 50},
+{nome: "Jardim Paulista", label: "06 Jd Paulista", x: 410, y: 281, w: 112, h: 50},
+{nome: "Jardim Nova Italia", label: "07 Jd Nova Italia", x: 569, y: 252, w: 136, h: 50},
+{nome: "Jardim Santa Luiza", label: "08 Jd Santa Luiza", x: 733, y: 226, w: 136, h: 50},
+{nome: "Jardim Aquarius", label: "09 Jardim Aquarius", x: 963, y: 121, w: 144, h: 50},
+{nome: "Jardim Piratininga", label: "10 Jd Piratininga", x: 846, y: 274, w: 136, h: 50},
+{nome: "Jardim Piratininga", label: "11 Jd Piratininga", x: 931, y: 328, w: 136, h: 50},
+{nome: "Jardim Piratininga", label: "12 Jd Piratininga", x: 1077, y: 211, w: 136, h: 50},
+{nome: "Vila Mathias", label: "13 Vila Mathias", x: 1070, y: 361, w: 120, h: 50},
+{nome: "Jardim Piratininga", label: "14 Jd Piratininga", x: 623, y: 385, w: 136, h: 50},
+{nome: "Jardim Nova Italia", label: "15 Jd Nova Italia", x: 779, y: 395, w: 136, h: 50},
+{nome: "Limeiranea", label: "16 Limeiranea", x: 152, y: 739, w: 104, h: 50},
+{nome: "Senador Vergueiro", label: "17 Senador Vergueiro", x: 329, y: 680, w: 160, h: 50},
+{nome: "Salão do Reino I", label: "18 Salão do Reino I", x: 519, y: 632, w: 152, h: 50},
+{nome: "Amparo I", label: "19 Amparo I", x: 757, y: 647, w: 88, h: 50},
+{nome: "Santa Josefa II", label: "20 Santa Josefa II", x: 904, y: 598, w: 144, h: 50},
+{nome: "São João III", label: "21 São João III", x: 1013, y: 545, w: 120, h: 50},
+{nome: "São João II", label: "22 São João II", x: 1115, y: 517, w: 112, h: 50},
+{nome: "São João I", label: "23 São João I", x: 1233, y: 495, w: 104, h: 50},
+{nome: "Centro", label: "24 Centro", x: 1314, y: 593, w: 72, h: 50},
+{nome: "Maria Helena II", label: "25 Maria Helena II", x: 1191, y: 716, w: 144, h: 50},
+{nome: "Maria Helena I", label: "26 Maria Helena I", x: 1110, y: 775, w: 136, h: 50},
+{nome: "Santa Josefa I", label: "27 Santa Josefa I", x: 964, y: 786, w: 136, h: 50},
+{nome: "Santa Cecilia", label: "28 Santa Cecilia", x: 1008, y: 960, w: 128, h: 50},
+{nome: "Amparo II", label: "29 Amparo II", x: 793, y: 984, w: 96, h: 50},
+{nome: "Vila Di Fior", label: "30 Vila Di Fior", x: 765, y: 881, w: 120, h: 50},
+{nome: "Modeneis", label: "31 Modeneis", x: 772, y: 1094, w: 88, h: 50},
+{nome: "Salão do Reino II", label: "32 Salão do Reino II", x: 558, y: 779, w: 160, h: 50},
+{nome: "Vila Agostinho", label: "33 Vila Agostinho", x: 357, y: 912, w: 136, h: 50},
+{nome: "Limeiranea II", label: "34 Limeiranea II", x: 216, y: 1013, w: 128, h: 50},
+{nome: "Sthalberg I", label: "35 Sthalberg I", x: 574, y: 911, w: 112, h: 50},
+{nome: "Sthalberg II", label: "36 Sthalberg II", x: 502, y: 1052, w: 120, h: 50},
 
-    document.getElementById('tituloBairro').textContent = bairro;
-    document.getElementById('mapaBairro').src = img;
+      // basta adicionar novos bairros aqui
+    ];
 
-    const form = document.getElementById('personForm');
-    const tableBody = document.querySelector('#personTable tbody');
-    let registros = [];
+    const svg = document.getElementById("mapa");
 
-    // Carregar registros do backend
-    async function loadRegistros() {
-      const res = await fetch('/api/pessoas');
-      const data = await res.json();
-      registros = data.filter(r => r.bairro === bairro);
-      renderTable();
-    }
+bairros.forEach(b => {
+  // Cria o link que envolve a caixa e o texto
+  const a = document.createElementNS("http://www.w3.org/2000/svg", "a");
+  a.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `bairro.html?nome=${b.nome}&img=${b.nome}.png`);
 
-    // Renderizar tabela
-    function renderTable() {
-      tableBody.innerHTML = '';
-      registros.forEach((item, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${item.dirigente}</td>
-          <td>${item.saida}</td>
-          <td>
-            <button onclick="editRegistro(${index})">Editar</button>
-            <button onclick="deleteRegistro(${item.id})">Remover</button>
-          </td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
+  // Caixa de fundo
+  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect.setAttribute("x", b.x);
+  rect.setAttribute("y", b.y + 15);
+  rect.setAttribute("width", b.w);
+  rect.setAttribute("height", b.h);
+  rect.setAttribute("fill", "black");
+  rect.setAttribute("fill-opacity", "0.2");
+  rect.setAttribute("rx", "5");
+  rect.setAttribute("ry", "5");
 
-    // Adicionar registro
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const dirigente = document.getElementById('dirigente').value;
-      const saida = document.getElementById('saida').value;
+  // Texto dentro da caixa
+  const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+  text.setAttribute("x", b.x + b.w/2);
+  text.setAttribute("y", b.y + b.h - 15);
+  text.setAttribute("text-anchor", "middle");
+  text.setAttribute("font-size", "16");
+  text.setAttribute("font-weight", "bold");
+  text.setAttribute("fill", "darkblue");
 
-      await fetch('/api/pessoas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bairro, dirigente, saida })
-      });
+  // Primeira linha
+  const tspan1 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+  tspan1.setAttribute("x", b.x + b.w/2);
+  tspan1.setAttribute("dy", "0");
+  tspan1.textContent = b.label.split(" ")[0];
 
-      form.reset();
-      loadRegistros();
-    });
+  // Segunda linha
+  const tspan2 = document.createElementNS("http://www.w3.org/2000/svg", "tspan");
+  tspan2.setAttribute("x", b.x + b.w/2);
+  tspan2.setAttribute("dy", "20");
+  tspan2.textContent = b.label.split(" ").slice(1).join(" ");
 
-    // Editar registro (remove e re-adiciona)
-    async function editRegistro(index) {
-      const registro = registros[index];
-      document.getElementById('dirigente').value = registro.dirigente;
-      document.getElementById('saida').value = registro.saida;
-      await deleteRegistro(registro.id);
-    }
+  text.appendChild(tspan1);
+  text.appendChild(tspan2);
 
-    // Remover registro
-    async function deleteRegistro(id) {
-      await fetch(`/api/pessoas?id=${id}`, { method: 'DELETE' });
-      loadRegistros();
-    }
+  // Adiciona rect e texto dentro do link
+  a.appendChild(rect);
+  a.appendChild(text);
 
-    // Inicializar
-    loadRegistros();
+  // Adiciona ao SVG
+  svg.appendChild(a);
+});
   </script>
 </body>
 </html>
