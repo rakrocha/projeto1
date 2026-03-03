@@ -15,7 +15,7 @@
 
     /* Título fixo no topo */
     header {
-      flex: 0 0 auto;            /* não cresce, fica fixo */
+      flex: 0 0 auto;            
       text-align: center;
       padding: 15px;
       background: #f0f0f0;
@@ -25,22 +25,25 @@
     h1 {
       color: blue;
       margin-bottom: 20px;
+      width: 70%;                /* ocupa 70% da largura */
+      margin-left: auto;         /* centraliza horizontalmente */
+      margin-right: auto;
     }
-
 
     /* Container do mapa */
     main {
-      flex: 1 1 auto;            /* ocupa o restante da tela */
+      flex: 1 1 auto;            
       display: flex;
       justify-content: center;   /* centraliza horizontalmente */
-      align-items: flex-start;   /* alinha no topo, logo abaixo do header */
+      align-items: flex-start;   /* alinha no topo */
     }
 
     svg {
-      height: 100vh;             /* ocupa toda a altura da tela */
-      width: auto;               /* largura proporcional */
+      width: 70%;                /* ocupa 70% da largura */
+      height: auto;              /* ajusta proporcionalmente */
       border: 2px solid #ccc;
       display: block;
+      margin-top: 20px;          /* espaço entre título e imagem */
     }
 
     text { cursor: pointer; }
