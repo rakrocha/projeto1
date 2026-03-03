@@ -44,7 +44,6 @@
       margin-top: 10px;
       cursor: pointer;
     }
-    /* Conteúdo protegido inicialmente oculto */
     #conteudo { display: none; }
     .image-container {
       position: relative;
@@ -79,7 +78,7 @@
   </style>
 </head>
 <body>
-  <!-- Formulário de login -->
+  <!-- Login -->
   <div class="login-container" id="loginBox">
     <h2>Login</h2>
     <input type="text" id="usuario" placeholder="Usuário" required>
@@ -119,22 +118,18 @@
     </table>
   </div>
 
-  <script>
+  <script type="module">
+    import { validarLogin } from './usuarios.js';
+
     async function fazerLogin() {
       const usuario = document.getElementById('usuario').value;
       const senha = document.getElementById('senha').value;
 
-      const resposta = await fetch("login.php", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ usuario, senha })
-      });
-
-      const resultado = await resposta.json();
+      const resultado = await validarLogin(usuario, senha);
 
       if (!resultado.sucesso) {
         alert("Usuário ou senha inválidos!");
-        window.location.href = "index.html"; // volta para inicial
+        window.location.href = "index.html";
       } else {
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("conteudo").style.display = "block";
@@ -150,11 +145,10 @@
       document.getElementById('tituloBairro').textContent = bairro;
       document.getElementById('mapaBairro').src = img;
 
-      // aqui você chama loadRegistros() etc.
       loadRegistros();
     }
 
-    // ... (restante do seu código JS de registros, tabela, etc.)
+    // Aqui você mantém o restante do código de registros (loadRegistros, renderTable etc.)
   </script>
 </body>
 </html>
