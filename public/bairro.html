@@ -12,13 +12,12 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0; /* remove espaço extra abaixo do header */
     }
     header h1 {
       margin: 0;
       flex-grow: 1;
       text-align: center;
-      font-size: 36px; /* título maior */
+      font-size: 24px;
       font-weight: bold;
     }
     header button {
@@ -29,35 +28,30 @@
       cursor: pointer;
       font-weight: bold;
     }
-    /* Container da imagem e botões */
     .image-container {
-      display: flex;              /* alinhamento horizontal */
-      align-items: flex-start;    /* todos alinhados pelo topo */
-      justify-content: center;    /* centraliza horizontalmente */
-      margin-top: 5px;            /* reduz espaço abaixo do título */
-      width: 70%;                 /* ocupa 70% da largura da página */
-      gap: 15px;                  /* espaço entre imagem e botões */
+      position: relative;
+      display: block;
+      margin: 20px auto;
+      width: 70%; /* agora sempre ocupa 70% da largura da página */
     }
     .image-container img {
-      width: 100%;                /* imagem ocupa todo espaço do container */
+      width: 100%; /* imagem se ajusta ao container */
       border: 2px solid #ccc;
       display: block;
     }
-    /* Botões ficam ao lado da imagem */
-    .buttons-container {
-      display: flex;
-      flex-direction: column;     /* botões empilhados verticalmente */
-      gap: 10px;
-    }
-    .buttons-container button {
+    .share-btn, .download-btn {
+      position: absolute;
+      right: 10px;
       background-color: white;
       border: 1px solid #ccc;
-      padding: 8px;
+      padding: 5px;
       cursor: pointer;
       font-size: 14px;
-      width: 120px;
+      width: 100px;
       text-align: center;
     }
+    .share-btn { top: 10px; }
+    .download-btn { top: 45px; } /* aparece logo abaixo do botão de compartilhar */
     form { margin: 20px; }
     input { margin: 5px; padding: 5px; }
     button { margin: 5px; padding: 5px 10px; }
@@ -75,10 +69,8 @@
 
   <div class="image-container">
     <img id="mapaBairro" src="" alt="Mapa do bairro">
-    <div class="buttons-container">
-      <button onclick="shareLink()">🔗 Link</button>
-      <button onclick="downloadImage()">⬇️ Baixar</button>
-    </div>
+    <button class="share-btn" onclick="shareLink()">🔗 Link</button>
+    <button class="download-btn" onclick="downloadImage()">⬇️ Baixar</button>
   </div>
 
   <form id="personForm">
