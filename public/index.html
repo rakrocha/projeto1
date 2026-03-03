@@ -105,7 +105,7 @@
 bairros.forEach(b => {
   // Cria o link que envolve a caixa e o texto
   const a = document.createElementNS("http://www.w3.org/2000/svg", "a");
-  a.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `bairro.html?nome=${b.nome}&img=${b.imageid}.png`);
+  a.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", `bairro.html?nome=${b.nome}&img=mapas/${b.imageid}.png`);
 
   // Caixa de fundo
   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
