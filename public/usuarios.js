@@ -12,7 +12,7 @@ export async function validarLogin(usuario, senha) {
     }
 
     const resultado = await resposta.json();
-    return resultado; // { sucesso: true, usuarioId: ... } ou { sucesso: false }
+    return resultado;
   } catch (err) {
     console.error('Erro ao validar login:', err);
     return { sucesso: false, mensagem: 'Erro interno' };
