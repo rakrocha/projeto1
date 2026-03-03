@@ -23,12 +23,17 @@
     }
 
     h1 {
-      color: blue;
-      margin-bottom: 20px;
-      width: 70%;                /* ocupa 70% da largura */
-      margin-left: auto;         /* centraliza horizontalmente */
-      margin-right: auto;
-    }
+  color: blue;
+  margin-bottom: 20px;
+  width: 70%;                /* ocupa 70% da largura */
+  margin-left: auto;         /* centraliza horizontalmente */
+  margin-right: auto;
+  font-size: clamp(24px, 7vw, 80px); /* responsivo: mínimo 24px, máximo 80px */
+  line-height: 1.2;
+  word-wrap: break-word;     /* quebra palavras longas */
+  text-align: center;        /* garante centralização do texto */
+}
+
 
     /* Container do mapa */
     main {
