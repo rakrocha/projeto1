@@ -1,4 +1,77 @@
-// Captura parâmetros da URL
+Arquivo "bairro.html":
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Bairro</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; }
+    header {
+      background-color: blue;
+      color: white;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header h1 {
+      margin: 0;
+      flex-grow: 1;
+      text-align: center;
+      font-size: 24px;
+      font-weight: bold;
+    }
+    header button {
+      background-color: white;
+      color: blue;
+      border: none;
+      padding: 8px 12px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    img {
+      display: block;
+      margin: 20px auto;
+      width: 50%;
+      border: 2px solid #ccc;
+    }
+    form { margin: 20px; }
+    input { margin: 5px; padding: 5px; }
+    button { margin: 5px; padding: 5px 10px; }
+    table { border-collapse: collapse; width: 90%; margin: 20px auto; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+    th { background-color: #f2f2f2; }
+  </style>
+</head>
+<body>
+  <header>
+    <button onclick="location.href='index.html'">Voltar</button>
+    <h1 id="tituloBairro">Bairro</h1>
+    <div style="width:60px;"></div>
+  </header>
+
+  <img id="mapaBairro" src="" alt="Mapa do bairro">
+
+  <form id="personForm">
+    <input type="text" id="dirigente" placeholder="Nome do dirigente" required>
+    <input type="date" id="saida" required>
+    <button type="submit">Adicionar</button>
+  </form>
+
+  <table id="personTable">
+    <thead>
+      <tr>
+        <th>Nome do dirigente</th>
+        <th>Data da saída de Campo</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    // Captura parâmetros da URL
     const params = new URLSearchParams(window.location.search);
     const bairro = params.get('nome') || "Bairro";
     const img = params.get('img') || "mapa.png";
@@ -6,25 +79,11 @@
     document.getElementById('tituloBairro').textContent = bairro;
     document.getElementById('mapaBairro').src = img;
 
+    const STORAGE_KEY = 'registros_' + bairro;
     const form = document.getElementById('personForm');
     const tableBody = document.querySelector('#personTable tbody');
-    let registros = [];
+    let registros = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-    // Carregar registros do backend
-    async function loadRegistros() {
-      try {
-        const res = await fetch('/api/pessoas');
-        if (!res.ok) throw new Error("Erro ao carregar registros");
-        const data = await res.json();
-        registros = data.filter(r => r.bairro === bairro);
-        renderTable();
-      } catch (err) {
-        console.error(err);
-        alert("Não foi possível carregar os registros.");
-      }
-    }
-
-    // Renderizar tabela
     function renderTable() {
       tableBody.innerHTML = '';
       registros.forEach((item, index) => {
@@ -34,87 +93,37 @@
           <td>${item.saida}</td>
           <td>
             <button onclick="editRegistro(${index})">Editar</button>
-            <button onclick="deleteRegistro(${item.id})">Remover</button>
+            <button onclick="deleteRegistro(${index})">Remover</button>
           </td>
         `;
         tableBody.appendChild(row);
       });
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(registros));
     }
 
-    // Adicionar registro
-    form.addEventListener('submit', async (e) => {
+    form.addEventListener('submit', (e) => {
       e.preventDefault();
       const dirigente = document.getElementById('dirigente').value;
       const saida = document.getElementById('saida').value;
-
-      await fetch('/api/pessoas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bairro, dirigente, saida })
-      });
-
+      registros.push({ dirigente, saida });
+      renderTable();
       form.reset();
-      loadRegistros();
     });
 
-    // Editar registro (remove e re-adiciona)
-    async function editRegistro(index) {
+    function deleteRegistro(index) {
+      registros.splice(index, 1);
+      renderTable();
+    }
+
+    function editRegistro(index) {
       const registro = registros[index];
       document.getElementById('dirigente').value = registro.dirigente;
       document.getElementById('saida').value = registro.saida;
-      await deleteRegistro(registro.id);
+      registros.splice(index, 1);
+      renderTable();
     }
 
-    // Remover registro
-    async function deleteRegistro(id) {
-      await fetch(`/api/pessoas?id=${id}`, { method: 'DELETE' });
-      loadRegistros();
-    }
-
-    // Compartilhar link da imagem
-    async function shareLink() {
-      const imgUrl = document.getElementById('mapaBairro').src;
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: "Mapa do bairro",
-            text: "Confira este mapa!",
-            url: imgUrl
-          });
-        } catch (err) {
-          console.error("Erro ao compartilhar link:", err);
-        }
-      } else {
-        alert("Compartilhamento de link não suportado neste navegador.");
-      }
-    }
-
-    // Baixar imagem para dispositivos móveis (usando Blob)
-    async function downloadImage() {
-      const imgUrl = document.getElementById('mapaBairro').src;
-      try {
-        const response = await fetch(imgUrl);
-        if (!response.ok) throw new Error("Erro ao buscar imagem");
-        
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
-
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = "mapa-bairro.png";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        console.error("Erro ao baixar imagem:", err);
-        alert("Não foi possível baixar a imagem neste dispositivo.");
-      }
-    }
-
-    // Inicializar
-    loadRegistros();
+    renderTable();
   </script>
 </body>
 </html>
