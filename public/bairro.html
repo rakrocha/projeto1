@@ -28,6 +28,24 @@
       cursor: pointer;
       font-weight: bold;
     }
+    .login-container {
+      margin: 50px auto;
+      width: 300px;
+      text-align: center;
+    }
+    .login-container input {
+      display: block;
+      width: 90%;
+      margin: 10px auto;
+      padding: 8px;
+    }
+    .login-container button {
+      padding: 8px 12px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    /* Conteúdo protegido inicialmente oculto */
+    #conteudo { display: none; }
     .image-container {
       position: relative;
       display: block;
@@ -61,153 +79,82 @@
   </style>
 </head>
 <body>
-  <header>
-    <button onclick="location.href='index.html'">Voltar</button>
-    <h1 id="tituloBairro">Bairro</h1>
-    <div style="width:60px;"></div>
-  </header>
-
-  <div class="image-container">
-    <img id="mapaBairro" src="" alt="Mapa do bairro">
-    <button class="share-btn" onclick="shareLink()">🔗 Link</button>
-    <button class="download-btn" onclick="downloadImage()">⬇️ Baixar</button>
+  <!-- Formulário de login -->
+  <div class="login-container" id="loginBox">
+    <h2>Login</h2>
+    <input type="text" id="usuario" placeholder="Usuário" required>
+    <input type="password" id="senha" placeholder="Senha" required>
+    <button onclick="fazerLogin()">Entrar</button>
   </div>
 
-  <form id="personForm">
-    <input type="text" id="dirigente" placeholder="Nome do dirigente" required>
-    <input type="date" id="saida" required>
-    <button type="submit">Adicionar</button>
-  </form>
+  <!-- Conteúdo protegido -->
+  <div id="conteudo">
+    <header>
+      <button onclick="location.href='index.html'">Voltar</button>
+      <h1 id="tituloBairro">Bairro</h1>
+      <div style="width:60px;"></div>
+    </header>
 
-  <table id="personTable">
-    <thead>
-      <tr>
-        <th>Nome do dirigente</th>
-        <th>Data da saída de Campo</th>
-        <th>Ações</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <div class="image-container">
+      <img id="mapaBairro" src="" alt="Mapa do bairro">
+      <button class="share-btn" onclick="shareLink()">🔗 Link</button>
+      <button class="download-btn" onclick="downloadImage()">⬇️ Baixar</button>
+    </div>
+
+    <form id="personForm">
+      <input type="text" id="dirigente" placeholder="Nome do dirigente" required>
+      <input type="date" id="saida" required>
+      <button type="submit">Adicionar</button>
+    </form>
+
+    <table id="personTable">
+      <thead>
+        <tr>
+          <th>Nome do dirigente</th>
+          <th>Data da saída de Campo</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
   <script>
-    // Captura parâmetros da URL
-    const params = new URLSearchParams(window.location.search);
-    const bairro = params.get('nome') || "Bairro";
-    const img = params.get('img') || "mapa.png";
+    async function fazerLogin() {
+      const usuario = document.getElementById('usuario').value;
+      const senha = document.getElementById('senha').value;
 
-    document.getElementById('tituloBairro').textContent = bairro;
-    document.getElementById('mapaBairro').src = img;
-
-    const form = document.getElementById('personForm');
-    const tableBody = document.querySelector('#personTable tbody');
-    let registros = [];
-
-    // Carregar registros do backend
-    async function loadRegistros() {
-      try {
-        const res = await fetch('/api/pessoas');
-        if (!res.ok) throw new Error("Erro ao carregar registros");
-        const data = await res.json();
-        registros = data.filter(r => r.bairro === bairro);
-        renderTable();
-      } catch (err) {
-        console.error(err);
-        alert("Não foi possível carregar os registros.");
-      }
-    }
-
-    // Renderizar tabela
-    function renderTable() {
-      tableBody.innerHTML = '';
-      registros.forEach((item, index) => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${item.dirigente}</td>
-          <td>${item.saida}</td>
-          <td>
-            <button onclick="editRegistro(${index})">Editar</button>
-            <button onclick="deleteRegistro(${item.id})">Remover</button>
-          </td>
-        `;
-        tableBody.appendChild(row);
-      });
-    }
-
-    // Adicionar registro
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const dirigente = document.getElementById('dirigente').value;
-      const saida = document.getElementById('saida').value;
-
-      await fetch('/api/pessoas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ bairro, dirigente, saida })
+      const resposta = await fetch("login.php", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ usuario, senha })
       });
 
-      form.reset();
-      loadRegistros();
-    });
+      const resultado = await resposta.json();
 
-    // Editar registro (remove e re-adiciona)
-    async function editRegistro(index) {
-      const registro = registros[index];
-      document.getElementById('dirigente').value = registro.dirigente;
-      document.getElementById('saida').value = registro.saida;
-      await deleteRegistro(registro.id);
-    }
-
-    // Remover registro
-    async function deleteRegistro(id) {
-      await fetch(`/api/pessoas?id=${id}`, { method: 'DELETE' });
-      loadRegistros();
-    }
-
-    // Compartilhar link da imagem
-    async function shareLink() {
-      const imgUrl = document.getElementById('mapaBairro').src;
-      if (navigator.share) {
-        try {
-          await navigator.share({
-            title: "Mapa do bairro",
-            text: "Confira este mapa!",
-            url: imgUrl
-          });
-        } catch (err) {
-          console.error("Erro ao compartilhar link:", err);
-        }
+      if (!resultado.sucesso) {
+        alert("Usuário ou senha inválidos!");
+        window.location.href = "index.html"; // volta para inicial
       } else {
-        alert("Compartilhamento de link não suportado neste navegador.");
+        document.getElementById("loginBox").style.display = "none";
+        document.getElementById("conteudo").style.display = "block";
+        inicializarConteudo();
       }
     }
 
-    // Baixar imagem para dispositivos móveis (usando Blob)
-    async function downloadImage() {
-      const imgUrl = document.getElementById('mapaBairro').src;
-      try {
-        const response = await fetch(imgUrl);
-        if (!response.ok) throw new Error("Erro ao buscar imagem");
-        
-        const blob = await response.blob();
-        const url = URL.createObjectURL(blob);
+    function inicializarConteudo() {
+      const params = new URLSearchParams(window.location.search);
+      const bairro = params.get('nome') || "Bairro";
+      const img = params.get('img') || "mapa.png";
 
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = "mapa-bairro.png";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+      document.getElementById('tituloBairro').textContent = bairro;
+      document.getElementById('mapaBairro').src = img;
 
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        console.error("Erro ao baixar imagem:", err);
-        alert("Não foi possível baixar a imagem neste dispositivo.");
-      }
+      // aqui você chama loadRegistros() etc.
+      loadRegistros();
     }
 
-    // Inicializar
-    loadRegistros();
+    // ... (restante do seu código JS de registros, tabela, etc.)
   </script>
 </body>
 </html>
