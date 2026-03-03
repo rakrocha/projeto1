@@ -1,5 +1,3 @@
-Arquivo "bairro.html":
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -30,12 +28,30 @@ Arquivo "bairro.html":
       cursor: pointer;
       font-weight: bold;
     }
-    img {
+    .image-container {
+      position: relative;
       display: block;
       margin: 20px auto;
-      width: 50%;
-      border: 2px solid #ccc;
+      width: 70%;
     }
+    .image-container img {
+      width: 100%;
+      border: 2px solid #ccc;
+      display: block;
+    }
+    .share-btn, .download-btn {
+      position: absolute;
+      right: 10px;
+      background-color: white;
+      border: 1px solid #ccc;
+      padding: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      width: 100px;
+      text-align: center;
+    }
+    .share-btn { top: 10px; }
+    .download-btn { top: 45px; }
     form { margin: 20px; }
     input { margin: 5px; padding: 5px; }
     button { margin: 5px; padding: 5px 10px; }
@@ -51,7 +67,11 @@ Arquivo "bairro.html":
     <div style="width:60px;"></div>
   </header>
 
-  <img id="mapaBairro" src="" alt="Mapa do bairro">
+  <div class="image-container">
+    <img id="mapaBairro" src="" alt="Mapa do bairro">
+    <button class="share-btn" onclick="shareLink()">🔗 Link</button>
+    <button class="download-btn" onclick="downloadImage()">⬇️ Baixar</button>
+  </div>
 
   <form id="personForm">
     <input type="text" id="dirigente" placeholder="Nome do dirigente" required>
@@ -79,11 +99,25 @@ Arquivo "bairro.html":
     document.getElementById('tituloBairro').textContent = bairro;
     document.getElementById('mapaBairro').src = img;
 
-    const STORAGE_KEY = 'registros_' + bairro;
     const form = document.getElementById('personForm');
     const tableBody = document.querySelector('#personTable tbody');
-    let registros = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    let registros = [];
 
+    // Carregar registros do backend
+    async function loadRegistros() {
+      try {
+        const res = await fetch('/api/pessoas');
+        if (!res.ok) throw new Error("Erro ao carregar registros");
+        const data = await res.json();
+        registros = data.filter(r => r.bairro === bairro);
+        renderTable();
+      } catch (err) {
+        console.error(err);
+        alert("Não foi possível carregar os registros.");
+      }
+    }
+
+    // Renderizar tabela
     function renderTable() {
       tableBody.innerHTML = '';
       registros.forEach((item, index) => {
@@ -93,37 +127,87 @@ Arquivo "bairro.html":
           <td>${item.saida}</td>
           <td>
             <button onclick="editRegistro(${index})">Editar</button>
-            <button onclick="deleteRegistro(${index})">Remover</button>
+            <button onclick="deleteRegistro(${item.id})">Remover</button>
           </td>
         `;
         tableBody.appendChild(row);
       });
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(registros));
     }
 
-    form.addEventListener('submit', (e) => {
+    // Adicionar registro
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       const dirigente = document.getElementById('dirigente').value;
       const saida = document.getElementById('saida').value;
-      registros.push({ dirigente, saida });
-      renderTable();
+
+      await fetch('/api/pessoas', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bairro, dirigente, saida })
+      });
+
       form.reset();
+      loadRegistros();
     });
 
-    function deleteRegistro(index) {
-      registros.splice(index, 1);
-      renderTable();
-    }
-
-    function editRegistro(index) {
+    // Editar registro (remove e re-adiciona)
+    async function editRegistro(index) {
       const registro = registros[index];
       document.getElementById('dirigente').value = registro.dirigente;
       document.getElementById('saida').value = registro.saida;
-      registros.splice(index, 1);
-      renderTable();
+      await deleteRegistro(registro.id);
     }
 
-    renderTable();
+    // Remover registro
+    async function deleteRegistro(id) {
+      await fetch(`/api/pessoas?id=${id}`, { method: 'DELETE' });
+      loadRegistros();
+    }
+
+    // Compartilhar link da imagem
+    async function shareLink() {
+      const imgUrl = document.getElementById('mapaBairro').src;
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: "Mapa do bairro",
+            text: "Confira este mapa!",
+            url: imgUrl
+          });
+        } catch (err) {
+          console.error("Erro ao compartilhar link:", err);
+        }
+      } else {
+        alert("Compartilhamento de link não suportado neste navegador.");
+      }
+    }
+
+    // Baixar imagem para dispositivos móveis (usando Blob)
+    async function downloadImage() {
+      const imgUrl = document.getElementById('mapaBairro').src;
+      try {
+        const response = await fetch(imgUrl);
+        if (!response.ok) throw new Error("Erro ao buscar imagem");
+        
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = "mapa-bairro.png";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+
+        URL.revokeObjectURL(url);
+      } catch (err) {
+        console.error("Erro ao baixar imagem:", err);
+        alert("Não foi possível baixar a imagem neste dispositivo.");
+      }
+    }
+
+    // Inicializar
+    loadRegistros();
   </script>
 </body>
 </html>
